@@ -1,0 +1,5 @@
+[
+  { "performer": "John Doe", "genre": "Rock", "price": 25, "day": 1, "image": "/img/uploads/1fsd324fsdg.jpg" },
+  { "performer": "Rebekah Parker", "genre": "R&B", "price": 25, "day": 1, "image": "/img/uploads/2f342s4fsdg.jpg" },
+  { "performer": "Maybell Haley", "genre": "Pop", "price": 40, "day": 1, "image": "/img/uploads/hdfh42sd213.jp" }
+]
