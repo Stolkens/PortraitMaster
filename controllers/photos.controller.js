@@ -1,5 +1,7 @@
 const Photo = require('../models/photo.model');
+const Voter = require('../models/Voter.model')
 const sanitize = require('mongo-sanitize');
+const requestIp = require('request-ip');
 
 /****** SUBMIT PHOTO ********/
 
@@ -93,15 +95,44 @@ exports.loadAll = async (req, res) => {
 exports.vote = async (req, res) => {
 
   try {
+    
+    const clientIp = requestIp.getClientIp(req); 
+    console.log('cientIp', clientIp);
     const photoToUpdate = await Photo.findOne({ _id: req.params.id });
+    // check if user with this IP exist
+    const userVote = await Voter.findOne({ user: clientIp });
+    console.log('photoToUpdate',photoToUpdate);
+    console.log('userVote', userVote);
+
+    
     if(!photoToUpdate) res.status(404).json({ message: 'Not found' });
-    else {
+  
+    if (userVote) {
+      if (userVote.votes.includes(photoToUpdate._id)) {
+        res.status(500).json({
+          message: "This photo has already been voted on from this ip address",
+        });
+      } else {
+        userVote.votes.push(photoToUpdate._id);
+        await userVote.save();
+        photoToUpdate.votes++;
+        await photoToUpdate.save();
+
+        res.send({ message: "OK" });
+      }
+    } else {
+      const newVoter = new Voter({
+        user: clientIp,
+        votes: [photoToUpdate._id],
+      });
+      await newVoter.save();
       photoToUpdate.votes++;
-      photoToUpdate.save();
-      res.send({ message: 'OK' });
+  
+      await photoToUpdate.save();
+
+      res.send({ message: "OK" });
     }
-  } catch(err) {
+  } catch (err) {
     res.status(500).json(err);
   }
-
 };
