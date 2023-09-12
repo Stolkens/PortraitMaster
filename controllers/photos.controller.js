@@ -42,18 +42,19 @@ exports.add = async (req, res) => {
         }
       }
     
-
       const pattern = new RegExp(
         /(<\s*(strong|em)*>(([A-z]|\s)*)<\s*\/\s*(strong|em)>)|(([A-z]|\s|\.)*)/,
         "g"
       );
+
       const titleMatched = title.match(pattern).join('');
       const authorMatched = author.match(pattern).join('');
-      if(titleMatched.length < title.length || authorMatched.length < author.length) throw new Error('Invalid characters...');
+
+      if (titleMatched.length < title.length || authorMatched.length < author.length) 
+        throw new Error('Invalid characters...');
   
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(email)) {
-        console.log('zly email')
         throw new Error('Invalid email');
       }
 
@@ -97,13 +98,9 @@ exports.vote = async (req, res) => {
   try {
     
     const clientIp = requestIp.getClientIp(req); 
-    console.log('cientIp', clientIp);
     const photoToUpdate = await Photo.findOne({ _id: req.params.id });
     // check if user with this IP exist
     const userVote = await Voter.findOne({ user: clientIp });
-    console.log('photoToUpdate',photoToUpdate);
-    console.log('userVote', userVote);
-
     
     if(!photoToUpdate) res.status(404).json({ message: 'Not found' });
   
